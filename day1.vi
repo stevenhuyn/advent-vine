@@ -1,0 +1,46 @@
+
+pub fn main(&io: &IO) {
+  let lines = [];
+  while io.read_line() is Some(line) {
+    lines.push_back(line);
+  }
+
+  let (p1, p2) = sol(lines);
+  io.println("{p1}, {p2}");
+}
+
+pub fn sol(lines: List[String]) -> (N32, N32) {
+  let zero_stop = 0;
+  let zero_pass = 0;
+  let dial = 50;
+  for line in lines.iter() {
+    let clockwise = true;
+    if line.starts_with(&"L") {
+      clockwise = false;
+    }
+
+    let (_, rotation) = line.split_at(1);
+    let turn = N32::parse(rotation).assume();
+    zero_pass += turn / 100;
+    turn = turn % 100;
+    
+    if !clockwise {
+      if turn > dial and dial != 0 {
+        zero_pass += 1;
+      }
+      turn = 100 - turn;
+    } else {
+      if dial + turn > 100 {
+        zero_pass += 1;
+      }
+    }
+
+    dial = (dial + turn) % 100;
+
+    if dial == 0 {
+      zero_stop += 1;
+    }
+  }
+
+  return (zero_stop, zero_stop + zero_pass);
+}

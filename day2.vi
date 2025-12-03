@@ -1,0 +1,71 @@
+use #root::data::Set;
+
+pub fn main(&io: &IO) {
+  let input = io.read_line().assume()
+  let invalids_sum = 0[N64];
+  let invalids_sum_twos = 0[N64];
+  let seen_set = Set::empty[N64];
+  for pair in input.split(",").iter() {
+    // Parsing
+    let couple = pair.split("-")
+    let lower_str = couple.pop_front().assume()
+    let higher_str = couple.pop_front().assume()
+    let lower = N64::parse(lower_str).assume()
+    let higher = N64::parse(higher_str).assume()
+    // io.println("{lower}-{higher}")
+
+
+    let lower_len = n64len(lower);
+
+    // Generating Invalids
+    // N64 has a max length of 20 digits via an N64
+    // thus we only need to check patterns of primality from 2,3,5,7
+    let primes = [2, 3, 5, 7]
+    for pattern_length in primes.iter() {
+      let power_reduction = lower_len - (lower_len / pattern_length);
+      let pat = lower / 10[N64]**power_reduction;
+
+      loop {
+        let pat_chained = chain(pat, pattern_length)
+        if pat_chained > higher {
+          break;
+        }
+
+        // Lower bound check can be optimised out after an extra digit
+        if pat_chained >= lower and !seen_set.has(&pat_chained) {
+          invalids_sum += pat_chained;
+          if pattern_length == 2 {
+            invalids_sum_twos += pat_chained
+          }
+
+          seen_set.insert(pat_chained);
+        }
+
+        pat += 1;
+        continue
+      }
+    }
+  }
+
+  io.println("{invalids_sum_twos}, {invalids_sum}")
+}
+
+fn chain(pat: N64, n: N32) -> N64 {
+  let length = n64len(pat)
+  let pat_chained = pat;
+  for i in 0..(n - 1) {
+    pat_chained = pat_chained * (10 ** length) + pat
+  }
+
+  return pat_chained
+}
+
+fn n64len(n: N64) -> N32 {
+  let len = 0;
+  while n > 0[N64] {
+    n = n / 10;
+    len += 1
+  }
+
+  return len
+}

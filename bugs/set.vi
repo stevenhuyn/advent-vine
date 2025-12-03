@@ -1,0 +1,11 @@
+
+use #root::data::Set;
+
+pub fn main(&io: &IO) {
+  let set = Set::empty[N64];
+
+  if true {
+    // The bug was that below needs a semicolon
+    set.insert(0[N64])
+  }
+}
