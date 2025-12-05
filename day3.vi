@@ -1,0 +1,36 @@
+use #root::data::{Array, List};
+
+pub fn main(&io: &IO) {
+  let p1 = 0;
+  while io.read_line() is Some(line) {
+    let bank = line.iter().map(fn* (c: Char) { N32::parse(c as String).assume() }).collect[List, _, _]();
+    let best_batteries = Array::empty[N32]
+
+    // First Pass
+    let (first_battery, bank_iter) = bank.iter().advance().assume()
+    best_batteries.push_back(first_battery)
+    let best_battery = first_battery;
+    for joltage in bank_iter {
+      if joltage > best_battery {
+        best_battery = joltage
+      }
+      best_batteries.push_back(best_battery)
+    }
+
+    // Second Pass
+    let best_joltage = 0;
+    let i = 0;
+    for joltage in bank.iter().advance().assume().1 {
+      let candidate = joltage + (best_batteries.get(i).assume() * 10)
+      if candidate > best_joltage {
+        best_joltage = candidate
+      }
+
+      i += 1
+    }
+
+    p1 += best_joltage;
+  }
+
+  io.println("p1: {p1}")
+}
