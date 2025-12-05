@@ -3,9 +3,9 @@ use #root::data::{List};
 pub fn main(&io: &IO) {
   let p1 = 0[N64];
   let p2 = 0[N64];
-  let banks = List::empty[List[N64]]
+  let banks = List::empty[List[N32]]
   while io.read_line() is Some(line) {
-    let bank = line.iter().map(fn* (c: Char) { N64::parse(c as String).assume() }).collect[List, _, _]();
+    let bank = line.iter().map(fn* (c: Char) { N32::parse(c as String).assume() }).collect[List, _, _]();
     banks.push_back(bank)
   }
 
@@ -18,14 +18,14 @@ pub fn main(&io: &IO) {
   io.println("p2: {p2}")
 }
 
-pub fn calc_joltage(bank: List[N64], length: N32) -> N64 {
+pub fn calc_joltage(bank: List[N32], length: N32) -> N64 {
   let bank_iter = bank.iter()
   let front = bank_iter.take(length)
   let rest = bank_iter.skip(length)
 
   let running_joltage = front.collect[List, _, _]()
   for battery in rest {
-    let new_joltage = List::empty[N64]
+    let new_joltage = List::empty[N32]
     running_joltage.push_back(battery);
     let dropped = false
     for (a, b) in running_joltage.iter().zip(running_joltage.iter().skip(1)) {
