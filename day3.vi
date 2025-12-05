@@ -10,15 +10,15 @@ pub fn main(&io: &IO) {
   }
 
   for bank in banks.iter() {
-    p1 += calc_joltage(&io, bank, 2)
-    p2 += calc_joltage(&io, bank, 12)
+    p1 += calc_joltage(bank, 2)
+    p2 += calc_joltage(bank, 12)
   }
 
   io.println("p1: {p1}")
   io.println("p2: {p2}")
 }
 
-pub fn calc_joltage(&io: &IO, bank: List[N64], length: N32) -> N64 {
+pub fn calc_joltage(bank: List[N64], length: N32) -> N64 {
   let bank_iter = bank.iter()
   let front = bank_iter.take(length)
   let rest = bank_iter.skip(length)
