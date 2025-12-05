@@ -29,7 +29,6 @@ pub fn calc_joltage(bank: List[N64], length: N32) -> N64 {
     running_joltage.push_back(battery);
     let dropped = false
     for (a, b) in running_joltage.iter().zip(running_joltage.iter().skip(1)) {
-      // io.println("Comparing {a} {b}");
       if a < b and !dropped {
         dropped = true
         continue;
