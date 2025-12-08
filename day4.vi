@@ -31,13 +31,11 @@ pub fn main(&io: &IO) {
   let removed = false;
   for i in 0..1000 {
     removed = false;
-    let marked = List::empty[(N32, N32)]
-    for y in 0..height {
-      for x in 0..width {
-        let (roll, _, _, _) = grid.get(index(x, y, width)).assume();
-
+    let marked = List::empty[(N32, N32)];
+    grid = grid.map_unordered(fn* (cell: (Bool, Bool, N32, N32)) {
+        let (roll, _, x, y) = cell;
         if !roll {
-          continue
+          return cell;
         }
 
         let neighs = 0;
@@ -54,11 +52,15 @@ pub fn main(&io: &IO) {
         }
 
         if neighs < 4 {
-          marked.push_back((x, y))
+          removed = true;
+          marked.push_back((x as N32, y as N32))
+          return (roll, true, x, y);
         }
-      }
-    }
 
+        return cell;
+    });
+
+    // Assuming the marked at any time is relatively low
     for (x, y) in marked.iter() {
       grid.at(index(x, y, width)).assume().* = (false, true, x, y)
       accessible += 1;
