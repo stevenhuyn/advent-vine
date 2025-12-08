@@ -1,0 +1,92 @@
+
+use #root::data::Array;
+
+pub fn main(&io: &IO) {
+  // (HasRoll, Marked, x, y)
+  let grid = Array::empty[Array[(Bool, Bool, N32, N32)]];
+  let y = 0;
+  while io.read_line() is Some(line) {
+    let x = 0;
+    let row = line.iter().map(fn* (c: Char) {
+      let result = if c == '@' {
+        (true, false, x, y)
+      } else {
+        (false, true, x, y)
+      };
+
+      x += 1
+      return result;
+    }).collect[List, _, _]() as Array;
+    grid.push_back(row);
+    y += 1
+  }
+
+  let height = grid.len();
+  let width = grid.get(0).assume().len();
+  let accessible = 0;
+
+  let removed = false;
+  for i in 0..1000 {
+    let marked = List::empty[(N32, N32)]
+    for x in 0..width {
+      for y in 0..height {
+        let (roll, _, _, _) = grid.get(y).assume().get(x).assume();
+
+          if !roll {
+            continue
+          }
+
+        let neighs = 0;
+        for (dx, dy) in [
+          (-1, -1),
+          (-1, +0),
+          (-1, +1),
+          (+0, -1),
+          (+0, +1),
+          (+1, -1),
+          (+1, +0),
+          (+1, +1),
+        ].iter() {
+          let nx = (dx + x as I32)
+          let ny = (dy + y as I32);
+          if nx >= +0 and nx <= width as I32 - +1 and ny >= +0 and ny <= height as I32 - +1 {
+            if grid.get(ny as N32).assume().get(nx as N32).assume().0 {
+              neighs += 1;
+            }
+          }
+        }
+
+        if neighs < 4 {
+          accessible += 1;
+          marked.push_back((x as N32, y))
+          removed = true;
+        }
+      }
+    }
+
+    // for (x, y) in marked.iter() {
+    //   grid.at(y).assume().*.at(x).assume().* = (false, true, x, y)
+    // }
+
+    grid = grid.map_unordered(fn* (row: Array[(Bool, Bool, N32, N32)]) {
+      return row.map_unordered(fn* (cell: (Bool, Bool, N32, N32)) {
+        let (_, marked, x, y) = cell;
+        if marked {
+          return (false, marked, x, y);
+        }
+
+        return cell;
+      });
+    });
+
+    if !removed {
+      break;
+    }
+
+    if i == 0 {
+      io.println("p1: {accessible}");
+    }
+  }
+
+  io.println("p2: {accessible}");
+}
