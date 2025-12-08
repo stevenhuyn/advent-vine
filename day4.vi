@@ -3,77 +3,67 @@ use #root::data::Array;
 
 pub fn main(&io: &IO) {
   // (HasRoll, Marked, x, y)
-  let grid = Array::empty[Array[(Bool, Bool, I32, I32)]];
-  let y = +0;
+  let grid = List::empty[(Bool, Bool, N32, N32)];
+  let y = 0;
+  let x = 0;
   while io.read_line() is Some(line) {
-    let x = +0;
-    let row = line.iter().map(fn* (c: Char) {
+    x = 0;
+
+    for c in line.iter() {
       let result = if c == '@' {
         (true, false, x, y)
       } else {
         (false, true, x, y)
       };
 
-      x += +1
-      return result;
-    }).collect[List, _, _]() as Array;
-    grid.push_back(row);
-    y += +1
+      x += 1
+      grid.push_back(result);
+    }
+
+    y += 1
   }
 
-  let height = grid.len();
-  let width = grid.get(0).assume().len();
-  let accessible = 0;
+  let height = x;
+  let width = y;
 
+  let accessible = 0;
+  let grid = grid as Array;
   let removed = false;
   for i in 0..1000 {
-    grid = grid.map_unordered(fn* (row: Array[(Bool, Bool, I32, I32)]) {
-      return row.map_unordered(fn* (cell: (Bool, Bool, I32, I32)) {
-        let (roll, _, x, y) = cell;
+    removed = false;
+    let marked = List::empty[(N32, N32)]
+    for y in 0..height {
+      for x in 0..width {
+        let (roll, _, _, _) = grid.get(index(x, y, width)).assume();
+
         if !roll {
-          return cell;
+          continue
         }
 
         let neighs = 0;
-        for (dx, dy) in [
-          (-1, -1),
-          (-1, +0),
-          (-1, +1),
-          (+0, -1),
-          (+0, +1),
-          (+1, -1),
-          (+1, +0),
-          (+1, +1),
+        for (dx, dy) in [(-1, -1),(-1, +0),(-1, +1),(+0, -1),(+0, +1),(+1, -1),(+1, +0),(+1, +1),
         ].iter() {
-          let nx = (dx + x) as N32;
-          let ny = (dy + y) as N32;
-          if nx >= 0 and nx <= width - 1 and ny >= 0 and ny <= height - 1 {
-            if grid.get(ny).assume().get(nx).assume().0 {
+          let nx = (dx + x as I32)
+          let ny = (dy + y as I32);
+
+          if nx >= +0 and nx <= width as I32 - +1 and ny >= +0 and ny <= height as I32 - +1 {
+            if grid.get(index(nx as N32, ny as N32, width)).assume().0 {
               neighs += 1;
             }
           }
         }
 
         if neighs < 4 {
-          accessible += 1;
-          removed = true;
-          return (roll, true, x, y);
+          marked.push_back((x, y))
         }
+      }
+    }
 
-        return cell;
-      });
-    });
-
-    grid = grid.map_unordered(fn* (row: Array[(Bool, Bool, I32, I32)]) {
-      return row.map_unordered(fn* (cell: (Bool, Bool, I32, I32)) {
-        let (_, marked, x, y) = cell;
-        if marked {
-          return (false, marked, x, y);
-        }
-
-        return cell;
-      });
-    });
+    for (x, y) in marked.iter() {
+      grid.at(index(x, y, width)).assume().* = (false, true, x, y)
+      accessible += 1;
+      removed = true;
+    }
 
     if !removed {
       break;
@@ -85,4 +75,8 @@ pub fn main(&io: &IO) {
   }
 
   io.println("p2: {accessible}");
+}
+
+pub fn index(x: N32, y: N32, width: N32) -> N32 {
+  return y * width + x;
 }
